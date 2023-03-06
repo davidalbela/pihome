@@ -1,6 +1,97 @@
-# Some samples
+# Readme
 
 https://gist.github.com/davidalbela/2367febf0d9e7811af54de6ece6040bc
+
+See flask folder.
+
+## Install 
+
+Go to flask path and follow steps:
+1. Create sensor flask_app.py
+
+2. Test flask
+```
+export FLASK_APP=/home/pi/flask_app.py
+flask run --host=0.0.0.0 --port=5000
+curl [pihome IP]:5000/metrics
+```
+
+3. Create run script
+```
+#!/bin/bash
+# flask settings
+export FLASK_APP=/home/pi/flask_app.py
+export FLASK_DEBUG=0
+
+flask run --host=0.0.0.0 --port=5000
+
+# Run chmod +x flask.sh
+```
+
+4. Install as a daemon
+```
+# Run cd /etc/systemd/system/
+# Run sudo vim flask.service
+
+[Unit]
+Description = flask python command to do useful stuff
+
+[Service]
+ExecStart = /home/pi/flask.sh
+
+[Install]
+WantedBy = multi-user.target
+```
+
+5. Enable flask daemon
+```
+sudo systemctl enable flask.service
+sudo systemctl flask start
+```
+
+## Install Docker & Docker compose
+
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+sudo apt-get install libffi-dev libssl-dev
+
+# Give docker rights to user. NOT SECURE for production!
+sudo usermod -aG docker pi
+exit # log out and log in again
+
+# try Docker
+docker version
+docker run hello-world
+
+# Install Docker Compose
+sudo pip3 install docker-compose
+sudo systemctl enable docker
+```
+
+## Run Prometheus and Grafana
+
+```
+git clone https://github.com/davidalbela/pihome.git
+cd pihome
+
+# TODO Setup env variables
+touch .env
+vim .env
+HOST_IP=
+GRAFANA_PASSWORD=
+
+docker-compose up -d
+
+# check running containers
+docker ps
+
+# check logs
+docker logs -f grafana
+docker logs -f prometheus
+```
+
+Visit your Raspberry Pi home IP in your browers :)
 
 # Monitoring Apartment with Raspberry Pi, Prometheus & Grafana
 

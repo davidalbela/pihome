@@ -10,17 +10,18 @@ import os
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-# TODO Pin GPIO donde se conecta el sensor
+# TODO Pin GPIO donde se conecta el sensor DHT11
 temperature = TemperatureSensor(4)
 
-motion = Motion(17)
-motion.run()
+# TODO Pin GPIO donde se conecta el sensor PIR
+#motion = Motion(17)
+#motion.run()
 
-bluetooth = Bluetooth()
-bluetooth.run()
+#bluetooth = Bluetooth()
+#bluetooth.run()
 
-wifi = Wifi(os.environ['NETWORK_TO_SCAN'])
-wifi.run()
+#wifi = Wifi(os.environ['NETWORK_TO_SCAN'])
+#wifi.run()
 
 app = Flask(__name__)
 

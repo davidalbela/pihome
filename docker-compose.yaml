@@ -2,18 +2,18 @@
 version: '3'
 
 services:
-  pihome:
-    image: pihome
-    build: .
-    restart: always
-    network_mode: host
-    devices:
-      - "/dev/mem:/dev/mem"
-    privileged: true
-    ports:
-      - 5000:5000
-    environment:
-      - NETWORK_TO_SCAN=${NETWORK_TO_SCAN}
+#  pihome:
+#    image: pihome
+#    build: .
+#    restart: always
+#    network_mode: host
+#    devices:
+#      - "/dev/mem:/dev/mem"
+#    privileged: true
+#    ports:
+#      - 5000:5000
+#    environment:
+#      - NETWORK_TO_SCAN=${NETWORK_TO_SCAN}
  
   prometheus:
     image: prom/prometheus:v2.16.0
@@ -31,8 +31,8 @@ services:
       - 9090:9090
     extra_hosts:
       - pihome:${HOST_IP}
-    depends_on:
-      - pihome
+    # depends_on:
+    #  - pihome
     restart: always
 
   grafana:

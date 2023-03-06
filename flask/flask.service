@@ -1,0 +1,13 @@
+# Run cd /etc/systemd/system/
+# Run sudo vim flask.service
+
+[Unit]
+Description = flask python command to do useful stuff
+
+[Service]
+ExecStart = /home/pi/flask.sh
+
+[Install]
+WantedBy = multi-user.target
+
+# Run systemctl enable flask.service
