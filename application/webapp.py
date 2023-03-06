@@ -10,7 +10,8 @@ import os
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-temperature = TemperatureSensor(14)
+# TODO Pin GPIO donde se conecta el sensor
+temperature = TemperatureSensor(4)
 
 motion = Motion(17)
 motion.run()
@@ -25,7 +26,7 @@ app = Flask(__name__)
 
 @app.route("/metrics")
 def metrics():
-    metrics = temperature.read() + motion.read() + bluetooth.read() + wifi.read()
+    metrics = temperature.read()# + motion.read() + bluetooth.read() + wifi.read()
     result = [metric.to_prometheus() for metric in metrics]
     return "\n".join(result), 200, {'Content-Type': 'text/plain; charset=utf-8'}
 

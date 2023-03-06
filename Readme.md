@@ -1,3 +1,7 @@
+# Some samples
+
+https://gist.github.com/davidalbela/2367febf0d9e7811af54de6ece6040bc
+
 # Monitoring Apartment with Raspberry Pi, Prometheus & Grafana
 
 For quite some time, I had a spare Raspberry Pi lying around in my place. And one weekend I came up with idea to make my apartment "smarter". What I mean by saying "smarter" is tracking some metrics of my surroundings.
