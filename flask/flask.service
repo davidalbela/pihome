@@ -1,3 +1,4 @@
+# TODO Realizar los pasos para crear el servicio
 # Run cd /etc/systemd/system/
 # Run sudo vim flask.service
 
@@ -10,4 +11,5 @@ ExecStart = /home/pi/flask.sh
 [Install]
 WantedBy = multi-user.target
 
+# TODO realizar el siguiente paso para habilitar el servicio
 # Run systemctl enable flask.service

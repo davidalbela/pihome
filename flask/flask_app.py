@@ -9,7 +9,7 @@ GPIO.setmode(GPIO.BOARD)
 sensor = Adafruit_DHT.DHT11
 
 # TODO 
-sensor_pin = 4 # Pin GPIO donde se conecta el sensor
+sensor_pin = # Indicar el pin GPIO donde se conecta el sensor
 
 # Add webserver
 from flask import Flask
