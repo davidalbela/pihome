@@ -62,6 +62,7 @@ sensor_pin = # Indicar el pin GPIO donde se conecta el sensor
 from flask import Flask
 app = Flask(__name__)
 
+# TODO What is `/metrics`
 @app.route('/metrics')
 def metrics():
     umid, temp = Adafruit_DHT.read_retry(sensor, sensor_pin)
@@ -118,8 +119,13 @@ WantedBy = multi-user.target
 
 5. Run and enable flask as a daemon
 ```
-sudo systemctl flask start
+sudo systemctl start flask
 sudo systemctl enable flask.service
+```
+
+**NOTE**: Check service logs with journal:
+```
+journalctl -u flask.service
 ```
 
 ## Execute Monitoring System

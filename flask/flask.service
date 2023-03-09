@@ -1,6 +1,6 @@
 # TODO Realizar los pasos para crear el servicio
 # Run cd /etc/systemd/system/
-# Run sudo vim flask.service
+# Run sudo nano flask.service
 
 [Unit]
 Description = flask python command to do useful stuff
@@ -12,4 +12,6 @@ ExecStart = /home/pi/flask.sh
 WantedBy = multi-user.target
 
 # TODO realizar el siguiente paso para habilitar el servicio
-# Run systemctl enable flask.service
+# Run sudo systemctl start flask
+# Run sudo systemctl enable flask.service
+# Run journalctl -u flask.service (q to exit)
