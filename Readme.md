@@ -1,38 +1,106 @@
 # Readme
 
+Monitoring Apartment with Raspberry Pi, Prometheus & Grafana. 
+A Pi Home python workshop based in original [pdambrauskas's Pi Home](https://github.com/pdambrauskas/pihome).
+
+## Hardware components
+
+- [Raspberry Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
+- 16 GB microSD card
+- [DHT11 Temperature And Humidity Sensor](https://components101.com/dht11-temperature-sensor)
+- [Motion Sensor HC-SR501](https://components101.com/hc-sr501-pir-sensor)
+- Raspberry Pi Camera module.
+
+## Python samples
+
 https://gist.github.com/davidalbela/2367febf0d9e7811af54de6ece6040bc
 
-See flask folder.
+## Install
 
-## Install 
+1. Install Adafruit libraries
+```
+sudo pip3 install Adafruit_DHT
+```
+
+2. Install Docker & Docker-compose
+```
+curl -fsSL https://get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+
+# Give docker rights to Pi user
+sudo usermod -aG docker pi
+```
+
+**NOTE**: Run exit and log in again to make sure `usermod` works.
+
+3. Install Docker-compose
+```
+sudo apt install libffi-dev libssl-dev
+sudo pip3 install docker-compose
+sudo systemctl enable docker
+```
+
+## Create a web service
 
 Go to flask path and follow steps:
 1. Create sensor flask_app.py
+```
+#!/bin/env python
+
+import Adafruit_DHT
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BOARD)
+
+sensor = Adafruit_DHT.DHT11
+
+# TODO 
+sensor_pin = # Indicar el pin GPIO donde se conecta el sensor
+
+# Add webserver
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/metrics')
+def metrics():
+    umid, temp = Adafruit_DHT.read_retry(sensor, sensor_pin)
+    if umid is not None and temp is not None:
+        return '# HELP local_temp local temperature\n# TYPE local_temp gauge\nlocal_temp {}\n# HELP local_humidity local humidity\n# TYPE local_humidity gauge\nlocal_humidity {}\n'.format(int(temp), int(umid)), 200, {'Content-Type': 'text/plain; charset=utf-8'}
+    else:
+        return 'Could not read from DHT11.', 200, {'Content-Type': 'text/plain; charset=utf-8'}
+```
 
 2. Test flask
 ```
+# Run the server
 export FLASK_APP=/home/pi/flask_app.py
 flask run --host=0.0.0.0 --port=5000
+
+# Open other terminal and run
 curl [pihome IP]:5000/metrics
 ```
 
-3. Create run script
+Press Control + c to exit.
+
+3. Create a run script `flash.sh` file
 ```
+# Run nano flash.sh
 #!/bin/bash
+
 # flask settings
 export FLASK_APP=/home/pi/flask_app.py
 export FLASK_DEBUG=0
 
 flask run --host=0.0.0.0 --port=5000
 
-# Run chmod +x flask.sh
+# Save and Run chmod +x flask.sh
 ```
 
-4. Install as a daemon
+4. Install `flash.sh` as a daemon
 ```
 # Run cd /etc/systemd/system/
-# Run sudo vim flask.service
-
+# Run sudo nano flask.service
 [Unit]
 Description = flask python command to do useful stuff
 
@@ -41,142 +109,48 @@ ExecStart = /home/pi/flask.sh
 
 [Install]
 WantedBy = multi-user.target
+
+# Save file
 ```
 
-5. Enable flask daemon
+5. Run and enable flask as a daemon
 ```
-sudo systemctl enable flask.service
 sudo systemctl flask start
+sudo systemctl enable flask.service
 ```
 
-## Install Docker & Docker compose
+## Execute Monitoring System
 
-```
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo apt-get install libffi-dev libssl-dev
-
-# Give docker rights to user. NOT SECURE for production!
-sudo usermod -aG docker pi
-exit # log out and log in again
-
-# try Docker
-docker version
-docker run hello-world
-
-# Install Docker Compose
-sudo pip3 install docker-compose
-sudo systemctl enable docker
-```
-
-## Run Prometheus and Grafana
-
+1. Clone this repo
 ```
 git clone https://github.com/davidalbela/pihome.git
 cd pihome
+```
 
-# TODO Setup env variables
-touch .env
-vim .env
-HOST_IP=
-GRAFANA_PASSWORD=
+2. Setup environment variables in `.env` file
+```
+nano .env
+HOST_IP= # TODO paste here your Raspberry Pi IP
+GRAFANA_PASSWORD= # TODO paste here a secure password for Grafana service
+```
 
+3. Execute Prometheus and Grafana as docker containers
+```
 docker-compose up -d
+```
 
-# check running containers
+4. Check your containers
+```
+# list containers
 docker ps
 
-# check logs
-docker logs -f grafana
+# read logs
+docker logs grafana
 docker logs -f prometheus
 ```
 
-Visit your Raspberry Pi home IP in your browers :)
-
-# Monitoring Apartment with Raspberry Pi, Prometheus & Grafana
-
-For quite some time, I had a spare Raspberry Pi lying around in my place. And one weekend I came up with idea to make my apartment "smarter". What I mean by saying "smarter" is tracking some metrics of my surroundings.
-
-I have some experience in working with [Prometheus](https://prometheus.io/) and [Grafana](https://grafana.com/), so I decided to incorporate those tools into my solution. Yes, it does sound like overengineering simple task, you can probably get same results in much simpler way : ).
-
-By deploying this project with all its components, you'll be able to track these metrics:
-- Room temperature
-- Humidity
-- Movement
-- Nearby bluetooth devices
-- Connected network devices
-
-## Hardware components
-
-These are all the component, I used in my project:
-- [Raspberry Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/)
-- 16 GB microSD card
-- [DHT11 Temperature And Humidity Sensor](https://components101.com/dht11-temperature-sensor)
-- [Motion Sensor HC-SR501](https://components101.com/hc-sr501-pir-sensor)
-- Mobile phone charger, for powering Raspberry Pi
-
-## Connecting DHT11 Sensor to Raspberry Pi
-
-I connected Ground pin to the Ground of Raspberry PI, Data Pin to GPIO 14 pin, Vcc pin to 3.3V power supply pin.
-
-## Connecting HC-SR501 Sensor to Raspberry Pi
-
-I connected Ground pin to the Ground of Raspberry PI, Data Pin to GPIO 17 pin, Vcc pin to 5V power supply pin.
-
-## Reading sensor data
-
-For reading DHT11 sensor data and feeding it to Prometheus, I chose [DHT11_Python](https://github.com/szazo/DHT11_Python) library, which is quite unstable, and sometimes does not return valid results, so you might get some gaps in your graphs.
-For HC-SR501, I wrote simple python code myself.
-You can browse source code of this project, for more details:
-    - `application/temperature.py` & `application/dht11.py` for temperature & humidity readings;
-    - `application/motion.py` for motion sensor;
-    - `application/webapp.py` for prometheus endpoint.
-
-
-## Prometheus configuration
-
-To scrape metrics from my Flask API, I've added configuration to `prometheus.yml`:
-
-```yaml
-global:
-    scrape_interval: 30s
-scrape_configs:
-    - job_name: 'pihome'
-      static_configs:
-        - targets: [pihome:5000]
+5. Visit your Raspberry Pi IP in your Laptop browser:
 ```
-
-## Grafana Configuration
-
-Then, in `/etc/grafana/provisioning`, I've added datasource configuration:
-```yaml
-apiVersion: 1
-datasources:
-  - name: Prometheus
-    type: prometheus
-    url: http://prometheus:9090/
-    access: proxy
-    isDefault: true
+http:[Raspberry Pi IP]
 ```
-It is also possible to add Grafana dashboards to provisioning folder as json files, so that you don't need to create new dashboard each time you re-deploy Grafana.
-
-## Connecting everything together
-
-To make everything portable and easy to install, I packed my Flask API to Docker image and configured all services in `docker-compose.yaml`.
-To deploy whole stack you have to add `.env` file with some configuration properties:
-```
-HOST_IP=192.168.1.216
-NETWORK_TO_SCAN=192.168.1.0/24
-GRAFANA_PASSWORD=pihome
-```
-
-After adding `.env`, file run `docker-compose build` & `docker-compose up -d`.
-
-## Result
-
-![](dashboard.png)
-
-## Usefull resources
-
-- https://www.freva.com/2019/05/21/hc-sr501-pir-motion-sensor-on-raspberry-pi/
-- https://github.com/szazo/DHT11_Python
+Enter the user "admin" and your password configured in `.env` file (value for GRAFANA_PASSWORD).
