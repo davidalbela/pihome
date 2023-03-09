@@ -75,11 +75,14 @@ def metrics():
 ```
 # Run the server
 export FLASK_APP=/home/pi/flask_app.py
+export FLASK_DEBUG=1
 flask run --host=0.0.0.0 --port=5000
 
 # Open other terminal and run
 curl [pihome IP]:5000/metrics
 ```
+
+Why `/metrics`?
 
 Press Control + c to exit.
 
