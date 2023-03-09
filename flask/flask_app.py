@@ -27,6 +27,6 @@ def metrics():
     # motion = GPIO.input(motion_pin)
     if umid is not None and temp is not None:
         # TODO (Opcional) add "pihome_movement {} \n" to the returned text with the integer variable motions
-        return '# HELP local_temp local temperature\n# TYPE local_temp gauge\nlocal_temp {}\n# HELP local_humidity local humidity\n# TYPE local_humidity gauge\nlocal_humidity {}\n'.format(int(temp), int(umid)), 200, {'Content-Type': 'text/plain; charset=utf-8'}
+        return '# HELP pihome_temperature local temperature\n# TYPE pihome_temperature gauge\npihome_temperature {}\n# HELP pihome_humidity local humidity\n# TYPE pihome_humidity gauge\npihome_humidity {}\n'.format(int(temp), int(umid)), 200, {'Content-Type': 'text/plain; charset=utf-8'}
     else:
         return 'Could not read from DHT11.', 200, {'Content-Type': 'text/plain; charset=utf-8'}
