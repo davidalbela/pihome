@@ -139,14 +139,18 @@ cd pihome
 2. Setup environment variables in `.env` file
 ```
 nano .env
-HOST_IP= # TODO paste here your Raspberry Pi IP
-GRAFANA_PASSWORD= # TODO paste here a secure password for Grafana service
+# TODO paste here your Raspberry Pi IP
+HOST_IP=
+# TODO paste here a secure password for Grafana service
+GRAFANA_PASSWORD=
 ```
 
 3. Execute Prometheus and Grafana as docker containers
 ```
 docker-compose up -d
 ```
+
+**NOTE**: To stop containers you can execute `docker-compose down`.
 
 4. Check your containers
 ```
@@ -158,8 +162,8 @@ docker logs grafana
 docker logs -f prometheus
 ```
 
-5. Visit your Raspberry Pi IP in your Laptop browser:
+5. Visit your Raspberry Pi IP in your browser:
 ```
-http:[Raspberry Pi IP]
+http://[Raspberry Pi IP]
 ```
 Enter the user "admin" and your password configured in `.env` file (value for GRAFANA_PASSWORD).
